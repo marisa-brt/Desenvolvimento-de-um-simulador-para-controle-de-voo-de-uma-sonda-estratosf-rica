@@ -1,1 +1,0 @@
-# Desenvolvimento-de-um-simulador-para-controle-de-voo-de-uma-sonda-estratosf-rica
