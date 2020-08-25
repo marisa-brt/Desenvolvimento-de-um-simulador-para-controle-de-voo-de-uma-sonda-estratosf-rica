@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "biblioteca.h" //Biblioteca com funÁıes necess·rias
+#include "biblioteca.h" //Biblioteca com fun√ß√µes necess√°rias
 
-//CÛdigo para c·lculo da trajetÛria e velocidade em coordenadas esfÈricas do voo de um bal„o meteorolÛgico com hÈlio
+//C√≥digo para c√°lculo da trajet√≥ria e velocidade em coordenadas esf√©ricas do voo de um bal√£o meteorol√≥gico com h√©lio
 int main(int argc, char* argv[])
 {
     double r, theta, lambda, vol, m, alt, h, r_b, r_b0, e, e_0, r_bf, m_h, g, T, P, P_h, ro, ro_h0, ro_h;
     double d_r, d_lambda, d_theta, vvento_r, vvento_theta, vvento_lambda, drb_dpm, beta;
     double t = 0.0; //Tempo
-    int cont_p = 0.0;//Contador para impress„o do resultado de 1000 a 1000 passos
+    int cont_p = 0.0;//Contador para impress√£o do resultado de 1000 a 1000 passos
     h = 0.01;//Passo
     int result;
 
     //if(argc != 6){
-        //printf("Usar: IC.2020.08.exe altitude latitude(graus) longitude(graus) massa_balao(bal„o + payload [kg]) empuxo(kgf)\n\n");
+        //printf("Usar: IC.2020.08.exe altitude latitude(graus) longitude(graus) massa_balao(bal√£o + payload [kg]) empuxo(kgf)\n\n");
         //exit(1);
     //}
 
-    //AplicaÁ„o das vari·veis dadas pelo usu·rio no cÛdigo
+    //Aplica√ß√£o das vari√°veis dadas pelo usu√°rio no c√≥digo
     alt = 850.0;//atof(argv[1]);
     double latitude = -22.00548;//atof(argv[2]);
     double longitude = -47.93405;//atof(argv[3]);
@@ -42,10 +42,10 @@ int main(int argc, char* argv[])
 
     FILE *arq; // chamando arquivo para escrita de dados
     arq = fopen("Teste1.txt","w"); //Abrindo arquivo para escrita de dados
-    //printf("Defina as coordenadas (theta e lambda), o volume do bal„o,a massa e a altitude de lanÁamento \n");
-    //scanf("%lf %lf %lf %lf %lf", &theta, &lambda, &vol, &m, &alt);//InformaÁıes definidas pelo usu·rio
+    //printf("Defina as coordenadas (theta e lambda), o volume do bal√£o,a massa e a altitude de lan√ßamento \n");
+    //scanf("%lf %lf %lf %lf %lf", &theta, &lambda, &vol, &m, &alt);//Informa√ß√µes definidas pelo usu√°rio
 
-    result = fprintf(arq,"#       Tempo      Altitude       Vel rad     Vel theta    Vel lambda    Raio bal„o\n");
+    result = fprintf(arq,"#       Tempo      Altitude       Vel rad     Vel theta    Vel lambda    Raio bal√£o\n");
 
     //theta = 1.54;//-0.3839724;
     //lambda = 1.54;//2.3387412;
@@ -56,23 +56,23 @@ int main(int argc, char* argv[])
     //ro_h0 = 0.151;
     //g = 9.8168;
     //ro = 1.094;
-    g = grav(r); //aceleraÁ„o da gravidade local
+    g = grav(r); //acelera√ß√£o da gravidade local
     T = Temp(r); //temperatura local
-    P = Pres(r, T, g); //press„o local
-    ro = P/(Ra*T); //densidade atmosfÈrica local
-    ro_h = P/(R_h*T); //densidade local do hÈlio
-    vol = 7.54644637536312716197;//empuxo/ro; //volume inicial do bal„o
-    m_h = ro_h * vol; //massa de hÈlio
+    P = Pres(r, T, g); //press√£o local
+    ro = P/(Ra*T); //densidade atmosf√©rica local
+    ro_h = P/(R_h*T); //densidade local do h√©lio
+    vol = 7.54644637536312716197;//empuxo/ro; //volume inicial do bal√£o
+    m_h = ro_h * vol; //massa de h√©lio
     e_0 = e = 0.001;
     r_b = r_b0 = raio_bi(ro_h, m_h);
 
-    //Leitura de valores do raio do bel„o e do beta em arquivo
+    //Leitura de valores do raio do bal√£o e do beta em arquivo
     FILE *arq2 = fopen("r_b_V2.dat","rb");
     double rbarq, betaarq, r_ba[2084], betaa[2084];
     int cont_p2 = 1;
 
         if(arq2 == NULL){
-            printf("Arquivo de raio de bal„o x beta n„o abre!");
+            printf("Arquivo de raio de bal√£o x beta n√£o abre!");
         }
         else{
             while((fscanf(arq2, "   %lf %lf", &rbarq, &betaarq)) != EOF){
@@ -88,9 +88,9 @@ int main(int argc, char* argv[])
         fclose(arq2);
         i = 1;
 
-    // DeterminaÁ„o das "inclinaÁıes" dos intervalos para o mÈtodo de Hunge Kutta atravÈs de vetores de 6 elementos
+    // Determina√ß√£o das "inclina√ß√µes" dos intervalos para o m√©todo de Hunge Kutta atrav√©s de vetores de 6 elementos
     double k1[7],k2[7],k3[7],k4[7];
-    //C·lculo dos vetores k's para cada elemento/vari·vel posiÁ„o e velocidade
+    //C√°lculo dos vetores k's para cada elemento/vari√°vel posi√ß√£o e velocidade
 
     result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T,  d_r,  d_theta,  d_lambda,  r_b);
 
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
         ro_h = m_h/vol;
         P_h = ro_h*R_h*T;
         e = e_0*r_b0*r_b0/(r_b*r_b);
-        //DeterminaÁ„o de beta
+        //Determina√ß√£o de beta
         while (fabs(r_b - r_ba[i])<=0.0001){
             if (fabs(r_b - r_ba[i-1]<fabs(r_b - r_ba[i]))){
                 beta = betaa[i-1];
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
         }
         drb_dpm = r_b*r_b/(2.0*e*beta-3.0*r_b*(P_h-P));
 
-        //calculo de k1 para cada uma das vari·veis
+        //calculo de k1 para cada uma das vari√°veis
         k1[0] = h*drb_dt(d_r, T, P, r_b, ro_h, g, m, P_h, drb_dpm);
         k1[1] = h*d_r;
         k1[2] = h*d_theta;
@@ -150,10 +150,10 @@ int main(int argc, char* argv[])
         k4[5] = h*d2theta(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m,vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
         k4[6] = h*d2lambda(r+k3[1],theta+k3[2], d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m,vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
 
-        t += h;// O tempo È acrescido pelo passo h a cada loop
-        cont_p++; //Contador de impress„o se soma
+        t += h;// O tempo √© acrescido pelo passo h a cada loop
+        cont_p++; //Contador de impress√£o se soma
 
-        //C·lculo das vari·veis
+        //C√°lculo das vari√°veis
         r_b += (k1[0]+2.0*k2[0]+2.0*k3[0]+k4[0])/6.0;
         r += (k1[1]+2.0*k2[1]+2.0*k3[1]+k4[1])/6.0;
         theta += (k1[2]+2.0*k2[2]+2.0*k3[2]+k4[2])/6.0;
@@ -164,13 +164,13 @@ int main(int argc, char* argv[])
 
         printf("%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",t , r, d_r, d_theta, d_lambda);
 
-        if (cont_p==10){ // A cada 100 loops do while os valores das vari·veis s„o impressas no arquivo
+        if (cont_p==10){ // A cada 100 loops do while os valores das vari√°veis s√£o impressas no arquivo
             if(arq==NULL){ //Mensagem caso haja erro na abertura do arquivo
                 printf("Problemas na abertura do arquivo\n");
                 system("pause");
                 exit(1);
             }
-            //impress„o de dados no arquivo
+            //impress√£o de dados no arquivo
             result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T,  d_r,  d_theta*r,  d_lambda*r*sin(theta),  r_b);
             if(result<0){
                 printf("Erro na escrita do arquivo\n");
