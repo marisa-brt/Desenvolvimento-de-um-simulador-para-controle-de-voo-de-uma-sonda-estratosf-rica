@@ -133,7 +133,7 @@ double drb_dt(double d_r, double T, double P, double r_b, double ro_h, double g,
     double drb_dtf = (drb_dpm*(d_r/T)*((-P_h*grad_t) + (P*g/R_h)))/(1.0+(3.0*P_h*drb_dpm/r_b));//Dúvida em relação ao sinal do grad_t
                                 //Comentario: o sinal de grad_t depende da altitude, de acordo com a função Temp acima 
     return drb_dtf;             //Comentario: pela minha expressão, não tem o sinal negativo em (-P_h*grad_t)
-}
+}                               //Comentario: pela minha expressao, em (P*g/R_h), aparece a constante R do ar e no do hélio  
 
 //Cálculo do arrasto gerado pelo balão na direção radial
 double arrasto_r(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda)
