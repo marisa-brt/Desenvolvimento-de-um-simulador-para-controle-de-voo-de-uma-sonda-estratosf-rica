@@ -17,7 +17,7 @@ double dens(double r, double T, double P, double g); //Função densidade por alti
 double dens_helio(double P, double T);//Densidade local do hélio
 double volume(double m_h, double ro_h); //Volume local do balão
 double raio_bi(double ro_h, double m_h); //Função raio do balão inicial
-double drb_dt(double d_r, double T, double P, double r_b, double ro_h, double g, double m, double P_h, double drb_dpm);
+double drb_dt(double r, double d_r, double T, double P, double r_b, double ro_h, double g, double m, double P_h, double drb_dpm);
 //double raio_b(double P, double T, double m_h, double ro_h, double r_b, double vol, double e_0, double r_b0);//Função parao raio do balão em função da altitude e da deformação
 double arrasto_r(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Função arrasto gerado pelo balão em r
 double arrasto_theta(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Função arrasto gerado pelo balão em theta

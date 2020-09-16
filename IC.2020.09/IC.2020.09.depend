@@ -3,5 +3,11 @@
 	"biblioteca.h"
 	<math.h>
 
-1600005672 c:\users\marib\onedrive\Área de trabalho\ic\versão 1\ic.2020.09\ic.2020.09\biblioteca.h
+1600263843 c:\users\marib\onedrive\Área de trabalho\ic\versão 1\ic.2020.09\ic.2020.09\biblioteca.h
+
+1600260656 source:c:\users\marib\onedrive\Área de trabalho\ic\versão 1\ic.2020.09\ic.2020.09\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	"biblioteca.h"
 
