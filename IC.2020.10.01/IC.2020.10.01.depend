@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1602193886 source:c:\users\marib\onedrive\Área de trabalho\ic\versão 1\ic.2020.10.1\ic.2020.10.01\biblioteca.c
+	"biblioteca.h"
+	<math.h>
+
+1602192981 c:\users\marib\onedrive\Área de trabalho\ic\versão 1\ic.2020.10.1\ic.2020.10.01\biblioteca.h
+
+1602193806 source:c:\users\marib\onedrive\Área de trabalho\ic\versão 1\ic.2020.10.1\ic.2020.10.01\simulador.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	"biblioteca.h"
+
