@@ -1,26 +1,26 @@
-
-
-//Biblioteca com fun√ß√µes necess√°rias para determina√ß√£o da trajet√≥ria de voo de um bal√£o meteorol√≥gico com h√©lio
+//Biblioteca com funÁıes necess·rias para determinaÁ„o da trajetÛria de voo de um bal„o meteorolÛgico com hÈlio
 
 #define R_T 6371000 //Raio da Terra
 #define OMEGA 7.292115900231275e-5 // Velocidade angular da Terra
-#define R_h 2077.1 //Constante individual do h√©lio
+#define R_h 2077.1 //Constante individual do hÈlio
 #define Ca 0.34037379532479679571 //Constante de arrasto
 #define Ra 287.54 // Constante universal dos gases tomando a massa molar do ar constante
+#define K 2.0 //Fator de viscosidade, determinado por par‚metros geomÈtricos da v·lvula e n˙mero de Reynolds
 
 
-double grav(double r); //Fun√ß√£o acelera√ß√£o da gravidade local em m/s^2
-double update_atm(double alt_0, double T0, double r, double r_ant, double g, double *T, double *p, double *rho);//Determina as propriedades termodin√¢micas da atmosfera na posicao radial r
-double Temp(double r); //Fun√ß√£o temperatura por altitude em K
-double Pres(double r, double T, double g); //Fun√ß√£o press√£o por altitude em Pa
-double dens(double r, double T, double P, double g); //Fun√ß√£o densidade por altitude em kg/m^3
-double dens_helio(double P, double T);//Densidade local do h√©lio
-double volume(double m_h, double ro_h); //Volume local do bal√£o
-double raio_bi(double ro_h, double m_h); //Fun√ß√£o raio do bal√£o inicial
+double grav(double r); //FunÁ„o aceleraÁ„o da gravidade local em m/s^2
+double update_atm(double alt_0, double T0, double r, double r_ant, double g, double *T, double *p, double *rho);//Determina as propriedades termodin‚micas da atmosfera na posicao radial r
+double Temp(double r); //FunÁ„o temperatura por altitude em K
+double Pres(double r, double T, double g); //FunÁ„o press„o por altitude em Pa
+double dens(double r, double T, double P, double g); //FunÁ„o densidade por altitude em kg/m^3
+double dens_helio(double P, double T);//Densidade local do hÈlio
+double volume(double m_h, double ro_h); //Volume local do bal„o
+double raio_bi(double ro_h, double m_h); //FunÁ„o raio do bal„o inicial
 double drb_dt(double r, double d_r, double T, double P, double r_b, double ro_h, double g, double m, double P_h, double drb_dpm, double alt_0, double T0);
-double arrasto_r(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Fun√ß√£o arrasto gerado pelo bal√£o em r
-double arrasto_theta(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Fun√ß√£o arrasto gerado pelo bal√£o em theta
-double arrasto_lambda(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Fun√ß√£o arrasto gerado pelo bal√£o em lambda
-double d2r(double r, double theta, double d_r, double d_theta, double d_lambda, double m, double vol, double g, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Acelera√ß√£o radial
-double d2theta(double r, double theta, double d_r, double d_theta, double d_lambda, double m, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Acelera√ß√£o em theta
-double d2lambda(double r, double theta, double d_r,double d_theta, double d_lambda,double m, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Acelera√ß√£o em lambda
+double arrasto_r(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //FunÁ„o arrasto gerado pelo bal„o em r
+double arrasto_theta(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //FunÁ„o arrasto gerado pelo bal„o em theta
+double arrasto_lambda(double v_r,double v_theta, double v_lambda, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //FunÁ„o arrasto gerado pelo bal„o em lambda
+double d2r(double r, double theta, double d_r, double d_theta, double d_lambda, double m, double vol, double g, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //AceleraÁ„o radial
+double d2theta(double r, double theta, double d_r, double d_theta, double d_lambda, double m, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //AceleraÁ„o em theta
+double d2lambda(double r, double theta, double d_r,double d_theta, double d_lambda,double m, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //AceleraÁ„o em lambda
+double fluxo_massa(double ro_h, double d, double P, double P_h);
