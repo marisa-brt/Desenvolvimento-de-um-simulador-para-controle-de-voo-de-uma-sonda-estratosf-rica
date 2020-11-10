@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     arq = fopen("Teste1.txt","w"); //Abrindo arquivo para escrita de dados
 
     //Impressão do nome das variáveis no início do arquivo
-    result = fprintf(arq,"#       Tempo      Altitude       Pressão   Empuxo    Volume     Densidade\n");
+    result = fprintf(arq,"#       Tempo      Altitude    Velocidade    Massa         Volume        Densidade     Ac. gravidade\n");
 
     //Chamada de funções e determinação de variávies
     g = grav(r); //aceleração da gravidade local
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
     empuxo = ro*vol*(g+(r*OMEGA*OMEGA*sin(theta)*sin(theta)));
     double peso = m*g;
     //Impressão dos dados iniciais no arquivo
-    result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, P, empuxo,  vol, ro);
+    result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, d_r, m,  vol, ro, g);
 
     //Cálculo dos vetores k's para cada elemento/variável posição, velocidade e raio do balão
     while (r - R_T <= 32000){
@@ -138,6 +138,7 @@ int main(int argc, char* argv[])
         k4[4] = h*d2r(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, g, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
         k4[5] = h*d2theta(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
         k4[6] = h*d2lambda(r+k3[1],theta+k3[2], d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
+        k4[7] = h*fluxo_massa(ro_h, d, P, P_h);
 
         t += h;// O tempo é acrescido pelo passo h a cada loop
         cont_p++; //Contador de impressão se soma
@@ -154,16 +155,13 @@ int main(int argc, char* argv[])
         //Vazão
         if ((alt>alt_flut-1000)&&(d_r>0)){
             m -= (k1[7]+2.0*k2[7]+2.0*k3[7]+k4[7])/6.0;
-            alt = r - R_T;
-            printf("%13.8lf %13.8lf\n", alt, m);
-        continue;
         }
 
         empuxo = ro*vol*(g+(r*OMEGA*OMEGA*sin(theta)*sin(theta)));
         peso = m*g;
 
         //Impressão das variáveis no arquivo
-        if (cont_p==2){ // A cada 1000 loops do while os valores das variáveis são impressas no arquivo
+        if (cont_p==1){ // A cada 1000 loops do while os valores das variáveis são impressas no arquivo
             if(arq==NULL){ //Mensagem caso haja erro na abertura do arquivo
                 printf("Problemas na abertura do arquivo\n");
                 system("pause");
@@ -171,7 +169,7 @@ int main(int argc, char* argv[])
             }
             printf("%13.8lf %13.8lf %13.8lf %13.8lf\n",t , r, d_r, m);//impressão de dados desejados na tela
             //impressão de dados no arquivo
-            result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, P, empuxo,  vol,ro);
+            result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, d_r, m,  vol, ro, g);
             if(result<0){
                 printf("Erro na escrita do arquivo\n");
             }
