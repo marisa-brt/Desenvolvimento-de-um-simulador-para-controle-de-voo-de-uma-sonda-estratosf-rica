@@ -26,5 +26,6 @@ double d2r(double r, double theta, double d_r, double d_theta, double d_lambda, 
 double d2theta(double r, double theta, double d_r, double d_theta, double d_lambda, double m, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Aceleração em theta
 double d2lambda(double r, double theta, double d_r,double d_theta, double d_lambda,double m, double vol, double ro, double r_b, double vvento_r, double vvento_theta, double vvento_lambda); //Aceleração em lambda
 double fluxo_massa(double ro_h, double d, double P, double P_h);
-double dQ_dt(double T, double T_h, double P, double P_h, double ro, double d_r, double r_b);
+double dTh_dt(double T, double T_h, double P, double P_h, double ro, double d_r, double r_b, double r, double ro_h, double g, double m, double drb_dpm, double alt_0, double T0, double m_b);
+
 

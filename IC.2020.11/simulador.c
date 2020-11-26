@@ -29,14 +29,14 @@ int main(int argc, char* argv[])
     }*/
 
     //Aplicação das variáveis dadas pelo usuário no código
-    double alt_0 = 850.0; //atof(argv[1]); //altitude de lançamento. Ex: 850.0;
-    double latitude = -22.00548;//atof(argv[2]);//latitude de lançamento. Ex: -22.00548;
-    double longitude = -47.93405;//atof(argv[3]);//longitude de lançamento. Ex: -47.93405;
-    double m_b = 1.6;//atof(argv[4]); //massa balão(sem hélio). Ex: 1.6;
-    double m_s = 3.5115;//atof(argv[5]); //payload. Ex: 3.5115;
-    double empuxo = 8.3905;//atof(argv[6]); //Ex: 8.390508;
-    double alt_flut = 25000;//atof(argv[6]); //Ex: 25000
-    double d = 0.02;//atof(argv[7]); //Diâmetro da válvula. Ex. 0.02
+    double alt_0 = atof(argv[1]); //altitude de lançamento. Ex: 850.0;
+    double latitude = atof(argv[2]);//latitude de lançamento. Ex: -22.00548;
+    double longitude = atof(argv[3]);//longitude de lançamento. Ex: -47.93405;
+    double m_b = atof(argv[4]); //massa balão(sem hélio). Ex: 1.6;
+    double m_s = atof(argv[5]); //payload. Ex: 3.5115;
+    double empuxo = atof(argv[6]); //Ex: 8.390508;
+    double alt_flut = atof(argv[6]); //Ex: 25000
+    double d = atof(argv[7]); //Diâmetro da válvula. Ex. 0.02
 
     //Transformação dos dados para variávies do programa
     r = alt_0 +R_T;
@@ -97,10 +97,6 @@ int main(int argc, char* argv[])
         //Volume do balão - aproximação esférica
         vol = 4.0*M_PI*pow(r_b,3.0)/3.0;
 
-        //Quantidade de calor transferida (balão->atmosfera)
-        Cap = c_h*m_h + c_b*m_b;//Capacidade térmica média do balão
-        T_h -= (Q/Cap);
-
         //Modelo teórico de elasticidade da membrana de látex
         e = e_0*r_b0*r_b0/(r_b*r_b); //cálculo da redução da espessura da membrana conforme crescimento do volume/raio do balão
         beta_e = 50990.23198*pow(r_b, -4.885887); //coeficiente de elasticidade X espessura
@@ -115,7 +111,7 @@ int main(int argc, char* argv[])
         k1[5] = h*d2theta(r,theta,d_r,d_theta,d_lambda,m,vol, ro, r_b, vvento_r, vvento_theta, vvento_lambda);
         k1[6] = h*d2lambda(r,theta,d_r,d_theta,d_lambda,m,vol, ro, r_b, vvento_r, vvento_theta, vvento_lambda);
         k1[7] = h*fluxo_massa(ro_h, d, P, P_h);
-        k1[8] = h*dQ_dt(T, T_h, P, P_h, ro, d_r, r_b);
+        k1[8] = h*dTh_dt(T, T_h, P, P_h, ro, d_r, r_b, r, ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         //calculo k2
         k2[0] = h*drb_dt(r+k1[1]/2.0, d_r+k1[4]/2.0, T, P, r_b+k1[0]/2.0, ro_h, g, m+k1[7]/2.0, P_h, drb_dpm, alt_0, T0);
@@ -126,7 +122,7 @@ int main(int argc, char* argv[])
         k2[5] = h*d2theta(r+k1[1]/2.0,theta+k1[2]/2.0,d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m+k1[7]/2.0,vol, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
         k2[6] = h*d2lambda(r+k1[1]/2.0, theta+k1[2]/2.0, d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m+k1[7]/2.0,vol, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
         k2[7] = h*fluxo_massa(ro_h, d, P, P_h);
-        k2[8] = h*dQ_dt(T, T_h, P, P_h, ro, d_r+k1[4]/2.0, r_b+k1[0]/2.0);
+        k2[8] = h*dTh_dt(T, T_h+k1[8]/2.0, P, P_h, ro, d_r+k1[4]/2.0, r_b+k1[0]/2.0, r+k1[1]/2.0, ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         //calculo de k3
         k3[0] = h*drb_dt(r+k2[1]/2.0, d_r+k2[4]/2.0, T, P, r_b+k2[0]/2.0, ro_h, g, m+k2[7]/2.0, P_h, drb_dpm, alt_0, T0);
@@ -137,7 +133,7 @@ int main(int argc, char* argv[])
         k3[5] = h*d2theta(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m+k2[7]/2.0,vol, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
         k3[6] = h*d2lambda(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m+k2[7]/2.0,vol, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
         k3[7] = h*fluxo_massa(ro_h, d, P, P_h);
-        k3[8] = h*dQ_dt(T, T_h, P, P_h, ro, d_r+k2[4]/2.0, r_b+k2[0]/2.0);
+        k3[8] = h*dTh_dt(T, T_h+k2[8]/2.0, P, P_h, ro, d_r+k2[4]/2.0, r_b+k2[0]/2.0, r+k2[1]/2.0, ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         //calculo de k4
         k4[0] = h*drb_dt(r+k3[1], d_r+k3[4], T, P, r_b+k3[0], ro_h, g, m+k3[7], P_h, drb_dpm, alt_0, T0);
@@ -148,7 +144,7 @@ int main(int argc, char* argv[])
         k4[5] = h*d2theta(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
         k4[6] = h*d2lambda(r+k3[1],theta+k3[2], d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
         k4[7] = h*fluxo_massa(ro_h, d, P, P_h);
-        k4[8] = h*dQ_dt(T, T_h, P, P_h, ro, d_r+k3[4], r_b+k3[0]);
+        k4[8] = h*dTh_dt(T, T_h+k3[8], P, P_h, ro, d_r+k3[4], r_b+k3[0], r+k3[1], ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         t += h;// O tempo é acrescido pelo passo h a cada loop
         cont_p++; //Contador de impressão se soma
@@ -161,7 +157,7 @@ int main(int argc, char* argv[])
         d_r += (k1[4]+2.0*k2[4]+2.0*k3[4]+k4[4])/6.0;
         d_theta += (k1[5]+2.0*k2[5]+2.0*k3[5]+k4[5])/6.0;
         d_lambda += (k1[6]+2.0*k2[6]+2.0*k3[6]+k4[6])/6.0;
-        Q = (k1[8]+2.0*k2[8]+2.0*k3[8]+k4[8])/6.0;
+        T_h += (k1[8]+2.0*k2[8]+2.0*k3[8]+k4[8])/6.0;
 
         //Vazão
         if ((alt>alt_flut-1000)&&(d_r>0)){

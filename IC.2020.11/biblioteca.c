@@ -247,7 +247,7 @@ double fluxo_massa(double ro_h, double d, double P, double P_h)
 }
 
 //Taxa da quantidade de calor do balão para a atmosfera
-double dQ_dt(double T, double T_h, double P, double P_h, double ro, double d_r, double r_b)
+double dTh_dt(double T, double T_h, double P, double P_h, double ro, double d_r, double r_b, double r, double ro_h, double g, double m, double drb_dpm, double alt_0, double T0, double m_b)
 {
     double cond = 0.0027699 + T*7.63568e-5;//condutividade térmica(temperatura de filme)
     double visco_atm = 3.6517e-6 + T*4.9953e-8;//viscosidade dinâmica do ar externo
@@ -255,6 +255,7 @@ double dQ_dt(double T, double T_h, double P, double P_h, double ro, double d_r, 
     double prandtl = 1000.0*visco_atm/cond;
     double reynolds = 2.0*ro*d_r*r_b/visco_atm;
     double nusselt = 2.0 + pow(prandtl,0.4)*(0.4*pow(reynolds,0.5) + 0.06*pow(reynolds,2.0/3.0))*pow((visco_atm/visco_sup),0.25);
-    double dq_dtf =  2.0*nusselt*cond*M_PI*r_b*(T_h-T);
-    return dq_dtf;
+    double dr_dt = drb_dt(r, d_r, T, P, r_b, ro_h, g, m, P_h, drb_dpm, alt_0, T0);
+    double dT_dt = (-P_h*4.0*M_PI*r_b*r_b*dr_dt - 2.0*nusselt*cond*M_PI*r_b*(T_h-T))/(3.0*R_h/2.0 + m_b*c_b);
+    return dT_dt;
 }
