@@ -29,14 +29,14 @@ int main(int argc, char* argv[])
     }*/
 
     //Aplicação das variáveis dadas pelo usuário no código
-    double alt_0 = atof(argv[1]); //altitude de lançamento. Ex: 850.0;
-    double latitude = atof(argv[2]);//latitude de lançamento. Ex: -22.00548;
-    double longitude = atof(argv[3]);//longitude de lançamento. Ex: -47.93405;
-    double m_b = atof(argv[4]); //massa balão(sem hélio). Ex: 1.6;
-    double m_s = atof(argv[5]); //payload. Ex: 3.5115;
-    double empuxo = atof(argv[6]); //Ex: 8.390508;
-    double alt_flut = atof(argv[6]); //Ex: 25000
-    double d = atof(argv[7]); //Diâmetro da válvula. Ex. 0.02
+    double alt_0 = 850.0;//atof(argv[1]); //altitude de lançamento. Ex: 850.0;
+    double latitude = -22.00548;//atof(argv[2]);//latitude de lançamento. Ex: -22.00548;
+    double longitude = -47.93405;//atof(argv[3]);//longitude de lançamento. Ex: -47.93405;
+    double m_b = 1.6;//atof(argv[4]); //massa balão(sem hélio). Ex: 1.6;
+    double m_s = 3.5115;//atof(argv[5]); //payload. Ex: 3.5115;
+    double empuxo = 8.390508;//atof(argv[6]); //Ex: 8.390508;
+    double alt_flut = 25000;//atof(argv[6]); //Ex: 25000;
+    double d = 0.02;//atof(argv[7]); //Diâmetro da válvula. Ex. 0.02;
 
     //Transformação dos dados para variávies do programa
     r = alt_0 +R_T;
@@ -55,16 +55,16 @@ int main(int argc, char* argv[])
 
 
     FILE *arq; // chamando arquivo para escrita de dados
-    arq = fopen("Teste2.txt","w"); //Abrindo arquivo para escrita de dados
+    arq = fopen("Teste3.txt","w"); //Abrindo arquivo para escrita de dados
 
     //Impressão do nome das variáveis no início do arquivo
-    result = fprintf(arq,"#       Tempo      Altitude    Velocidade    Massa         Temperatura        Massa hélio     T_h\n");
+    result = fprintf(arq,"#       Tempo      Altitude    Velocidade    Massa         Pressão        Pressão interna     Raio_b\n");
 
     //Chamada de funções e determinação de variávies
     g = grav(r); //aceleração da gravidade local
     T0 = T = 22.0+273.15; //Alteracao 2020-11-05 Temp(r); //temperatura local
     T_h = T + 0.05; //Temperatura do hélio
-    P =  94360; //Alteracao 2020-11-05 Pres(r, T, g); //pressão local
+    P = P_h = 94360; //Alteracao 2020-11-05 Pres(r, T, g); //pressão local
     ro = P/(Ra*T); //densidade atmosférica local
     ro_h = P/(R_h*T); //densidade local do hélio
     vol = empuxo/ro; //volume inicial do balão. Ex: 7.5464;
@@ -81,10 +81,11 @@ int main(int argc, char* argv[])
     empuxo = ro*vol*(g+(r*OMEGA*OMEGA*sin(theta)*sin(theta)));
     double peso = m*g;
     //Impressão dos dados iniciais no arquivo
-    result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, d_r, m,  T, m_h, T_h);
+    result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, d_r, m,  P, P_h, r_b);
 
     //Cálculo dos vetores k's para cada elemento/variável posição, velocidade e raio do balão
     while (r - R_T <= 32000){
+
         //cálculo das variáves atmosféricas para cada altitude
         alt = r - R_T;
         g = grav(r);
@@ -99,8 +100,9 @@ int main(int argc, char* argv[])
 
         //Modelo teórico de elasticidade da membrana de látex
         e = e_0*r_b0*r_b0/(r_b*r_b); //cálculo da redução da espessura da membrana conforme crescimento do volume/raio do balão
-        beta_e = 50990.23198*pow(r_b, -4.885887); //coeficiente de elasticidade X espessura
-        drb_dpm = r_b*r_b/(2.0*beta_e - 3.0*r_b*(P_h-P)); //derivada do raio do balão pela pressão manométrica
+        //beta_e = 50990.23198*pow(r_b, -4.885887); //coeficiente de elasticidade X espessura
+        //drb_dpm = r_b*r_b/(2.0*beta_e - 3.0*r_b*(P_h-P)); //derivada do raio do balão pela pressão manométrica
+        drb_dpm = (r_b0/(600000.0*e_0))*(pow(r_b,8.0)/(-pow(r_b,6.0)*r_b0 + 30.0*pow(r_b,8.0) + pow(r_b0,6)*(7.0*r_b0 - 90.0*r_b*r_b)));
 
         //calculo de k1 para cada uma das variáveis
         k1[0] = h*drb_dt(r, d_r, T, P, r_b, ro_h, g, m, P_h, drb_dpm, alt_0, T0);
@@ -110,40 +112,40 @@ int main(int argc, char* argv[])
         k1[4] = h*d2r(r,theta,d_r,d_theta, d_lambda, m, vol, g, ro, r_b, vvento_r, vvento_theta, vvento_lambda);
         k1[5] = h*d2theta(r,theta,d_r,d_theta,d_lambda,m,vol, ro, r_b, vvento_r, vvento_theta, vvento_lambda);
         k1[6] = h*d2lambda(r,theta,d_r,d_theta,d_lambda,m,vol, ro, r_b, vvento_r, vvento_theta, vvento_lambda);
-        k1[7] = h*fluxo_massa(ro_h, d, P, P_h);
+        //k1[7] = h*fluxo_massa(ro_h, d, P, P_h);
         k1[8] = h*dTh_dt(T, T_h, P, P_h, ro, d_r, r_b, r, ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         //calculo k2
-        k2[0] = h*drb_dt(r+k1[1]/2.0, d_r+k1[4]/2.0, T, P, r_b+k1[0]/2.0, ro_h, g, m+k1[7]/2.0, P_h, drb_dpm, alt_0, T0);
+        k2[0] = h*drb_dt(r+k1[1]/2.0, d_r+k1[4]/2.0, T, P, r_b+k1[0]/2.0, ro_h, g, m/*+k1[7]/2.0*/, P_h, drb_dpm, alt_0, T0);
         k2[1] = h*(d_r+k1[4]/2.0);
         k2[2] = h*(d_theta+k1[5]/2.0);
         k2[3] = h*(d_lambda+k1[6]/2.0);
-        k2[4] = h*d2r(r+k1[1]/2.0,theta+k1[2]/2.0,d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m+k1[7]/2.0,vol, g, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
-        k2[5] = h*d2theta(r+k1[1]/2.0,theta+k1[2]/2.0,d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m+k1[7]/2.0,vol, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
-        k2[6] = h*d2lambda(r+k1[1]/2.0, theta+k1[2]/2.0, d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m+k1[7]/2.0,vol, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
-        k2[7] = h*fluxo_massa(ro_h, d, P, P_h);
+        k2[4] = h*d2r(r+k1[1]/2.0,theta+k1[2]/2.0,d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m/*+k1[7]/2.0*/,vol, g, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
+        k2[5] = h*d2theta(r+k1[1]/2.0,theta+k1[2]/2.0,d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m/*+k1[7]/2.0*/,vol, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
+        k2[6] = h*d2lambda(r+k1[1]/2.0, theta+k1[2]/2.0, d_r+k1[4]/2.0,d_theta+k1[5]/2.0, d_lambda+k1[6]/2.0,m/*+k1[7]/2.0*/,vol, ro, r_b+k1[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
+        //k2[7] = h*fluxo_massa(ro_h, d, P, P_h);
         k2[8] = h*dTh_dt(T, T_h+k1[8]/2.0, P, P_h, ro, d_r+k1[4]/2.0, r_b+k1[0]/2.0, r+k1[1]/2.0, ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         //calculo de k3
-        k3[0] = h*drb_dt(r+k2[1]/2.0, d_r+k2[4]/2.0, T, P, r_b+k2[0]/2.0, ro_h, g, m+k2[7]/2.0, P_h, drb_dpm, alt_0, T0);
+        k3[0] = h*drb_dt(r+k2[1]/2.0, d_r+k2[4]/2.0, T, P, r_b+k2[0]/2.0, ro_h, g, m/*+k2[7]/2.0*/, P_h, drb_dpm, alt_0, T0);
         k3[1] = h*(d_r+k2[4]/2.0);
         k3[2] = h*(d_theta+k2[5]/2.0);
         k3[3] = h*(d_lambda+k2[6]/2.0);
-        k3[4] = h*d2r(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m+k2[7]/2.0,vol, g, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
-        k3[5] = h*d2theta(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m+k2[7]/2.0,vol, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
-        k3[6] = h*d2lambda(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m+k2[7]/2.0,vol, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
-        k3[7] = h*fluxo_massa(ro_h, d, P, P_h);
+        k3[4] = h*d2r(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m/*+k2[7]/2.0*/,vol, g, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
+        k3[5] = h*d2theta(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m/*+k2[7]/2.0*/,vol, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
+        k3[6] = h*d2lambda(r+k2[1]/2.0,theta+k2[2]/2.0,d_r+k2[4]/2.0,d_theta+k2[5]/2.0, d_lambda+k2[6]/2.0,m/*+k2[7]/2.0*/,vol, ro, r_b+k2[0]/2.0, vvento_r, vvento_theta, vvento_lambda);
+        //k3[7] = h*fluxo_massa(ro_h, d, P, P_h);
         k3[8] = h*dTh_dt(T, T_h+k2[8]/2.0, P, P_h, ro, d_r+k2[4]/2.0, r_b+k2[0]/2.0, r+k2[1]/2.0, ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         //calculo de k4
-        k4[0] = h*drb_dt(r+k3[1], d_r+k3[4], T, P, r_b+k3[0], ro_h, g, m+k3[7], P_h, drb_dpm, alt_0, T0);
+        k4[0] = h*drb_dt(r+k3[1], d_r+k3[4], T, P, r_b+k3[0], ro_h, g, m/*+k3[7]*/, P_h, drb_dpm, alt_0, T0);
         k4[1] = h*(d_r+k3[4]);
         k4[2] = h*(d_theta+k3[5]);
         k4[3] = h*(d_lambda+k3[6]);
-        k4[4] = h*d2r(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, g, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
-        k4[5] = h*d2theta(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
-        k4[6] = h*d2lambda(r+k3[1],theta+k3[2], d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m+k3[7],vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
-        k4[7] = h*fluxo_massa(ro_h, d, P, P_h);
+        k4[4] = h*d2r(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m/*+k3[7]*/,vol, g, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
+        k4[5] = h*d2theta(r+k3[1],theta+k3[2],d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m/*+k3[7]*/,vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
+        k4[6] = h*d2lambda(r+k3[1],theta+k3[2], d_r+k3[4],d_theta+k3[5], d_lambda+k3[6],m/*+k3[7]*/,vol, ro, r_b+k3[0], vvento_r, vvento_theta, vvento_lambda);
+        //k4[7] = h*fluxo_massa(ro_h, d, P, P_h);
         k4[8] = h*dTh_dt(T, T_h+k3[8], P, P_h, ro, d_r+k3[4], r_b+k3[0], r+k3[1], ro_h, g, m, drb_dpm, alt_0, T0, m_b);
 
         t += h;// O tempo é acrescido pelo passo h a cada loop
@@ -159,10 +161,10 @@ int main(int argc, char* argv[])
         d_lambda += (k1[6]+2.0*k2[6]+2.0*k3[6]+k4[6])/6.0;
         T_h += (k1[8]+2.0*k2[8]+2.0*k3[8]+k4[8])/6.0;
 
-        //Vazão
+        /*//Vazão
         if ((alt>alt_flut-1000)&&(d_r>0)){
             m -= (k1[7]+2.0*k2[7]+2.0*k3[7]+k4[7])/6.0;
-        }
+        }*/
 
         //empuxo = ro*vol*(g+(r*OMEGA*OMEGA*sin(theta)*sin(theta)));
         //peso = m*g;
@@ -176,7 +178,7 @@ int main(int argc, char* argv[])
             }
             printf("%13.8lf %13.8lf %13.8lf %13.8lf\n",t , r, d_r, m);//impressão de dados desejados na tela
             //impressão de dados no arquivo
-            result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, d_r, m,  T, m_h, T_h);
+            result = fprintf(arq,"%13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf %13.8lf\n",  t ,  r - R_T, d_r, m,  P, P_h, r_b);
             if(result<0){
                 printf("Erro na escrita do arquivo\n");
             }
